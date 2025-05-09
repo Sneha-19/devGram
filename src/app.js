@@ -4,6 +4,17 @@ const app = express();
 
 const PORT = 5000;
 
+app.get("/user/:userId", (req,res) => {
+    console.log(req.params);
+    res.send("Param example")
+})
+
+app.get("/user", (req,res) => {
+    console.log(req.query);
+    res.send("Query printed")
+    //call url: localhost:5000/user?name=Sneha
+})
+
 app.get("/user", (req, res) => {
     res.send({firstname: "Sneha", lastname: "Singh"})
 })
