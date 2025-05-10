@@ -9,47 +9,74 @@ const PORT = 5000;
 
 app.use(express.json())
 
+//Add a user
 app.post("/signUp", async (req, res) => {
     const user = new User(req.body);
 
     try {
         await user.save()
         res.send("SignUp completed")
-    } catch(err) {
+    } catch (err) {
         res.status(400).send("Error in signup:", err.message)
     }
 })
 
+//Fetch one user
 app.get("/user", async (req, res) => {
     const userEmail = req.body.emailId;
 
-    try{
-        const users = await User.find({emailId : userEmail});
-        if(users.length === 0){
+    try {
+        const users = await User.find({ emailId: userEmail });
+        if (users.length === 0) {
             res.status(400).send("User not found")
         } else {
             res.send(users)
         }
-    } catch(err) {
+    } catch (err) {
         res.status(400).send("Semething went wrong")
     }
 })
 
-app.get("/feed", async (req,res) => {
-   try {
-   const users = await User.find({});
-   res.send(users)
-   } catch(err) {
-    res.status(400).send("Semething went wrong")
-   }
+//Fetch all the user
+app.get("/feed", async (req, res) => {
+    try {
+        const users = await User.find({});
+        res.send(users)
+    } catch (err) {
+        res.status(400).send("Semething went wrong")
+    }
+})
+
+//Delete a user
+app.delete("/user", async (req, res) => {
+    try {
+        const userId = req.body.userId;
+        await User.findByIdAndDelete(userId);
+        res.send("User deleted successfully")
+    } catch (err) {
+        res.status(400).send("Semething went wrong")
+    }
+})
+
+//Update a user
+app.patch("/user", async (req,res) => {
+    try {
+        const userId = req.body.userId;
+        const userData = req.body;
+        const updatedUser = await User.findByIdAndUpdate({_id : userId}, userData, {returnDocument: "after"});
+        console.log(updatedUser);
+        res.send("User updated successfully")
+    } catch (err) {
+        res.status(400).send("Semething went wrong")
+    }
 })
 
 connectDB().then(() => {
     console.log("Database connected successfully...");
-    app.listen(PORT, function(){
+    app.listen(PORT, function () {
         console.log("Server is running on port: ", PORT)
     })
-}).catch( (err) => {
+}).catch((err) => {
     console.log("Database couldn't be connected!")
 })
 
