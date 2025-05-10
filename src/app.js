@@ -6,18 +6,17 @@ const app = express();
 
 const PORT = 5000;
 
-app.post("/signup", async (req, res) => {
+app.use(express.json())
 
-    const userData = {
-        firstName: "Sneha",
-        lastName: "Singh",
-        emailId: "sneha@singh.com",
-        password: "sneha123"
-    };
+app.post("/signUp", async (req, res) => {
+    const user = new User(req.body);
 
-    const user = new User(userData);
-    await user.save()
-    res.send("SignUp completed")
+    try {
+        await user.save()
+        res.send("SignUp completed")
+    } catch(err) {
+        res.status(400).send("Error in signup:", err.message)
+    }
 })
 
 connectDB().then(() => {
