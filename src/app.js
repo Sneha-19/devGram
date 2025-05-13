@@ -63,11 +63,11 @@ app.patch("/user", async (req,res) => {
     try {
         const userId = req.body.userId;
         const userData = req.body;
-        const updatedUser = await User.findByIdAndUpdate({_id : userId}, userData, {returnDocument: "after"});
+        const updatedUser = await User.findByIdAndUpdate({_id : userId}, userData, {returnDocument: "after", runValidators: true});
         console.log(updatedUser);
         res.send("User updated successfully")
     } catch (err) {
-        res.status(400).send("Semething went wrong")
+        res.status(400).send("Semething went wrong"+ err.message)
     }
 })
 
