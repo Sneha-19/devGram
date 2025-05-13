@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
-const validator = require("validator")
+const validator = require("validator");
+const jwt = require("jsonwebtoken");
+const bcrypt = require('bcrypt');
 
 const userSchema = new mongoose.Schema({
     firstName: {
@@ -16,8 +18,8 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true,
         trim: true,
-        validate(value){
-            if(!validator.isEmail(value)){
+        validate(value) {
+            if (!validator.isEmail(value)) {
                 throw new Error("Invalid email Id")
             }
         }
@@ -25,8 +27,8 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true,
-        validate(value){
-            if(!validator.isStrongPassword(value)){
+        validate(value) {
+            if (!validator.isStrongPassword(value)) {
                 throw new Error("Kindly provide a strong paasword")
             }
         }
@@ -45,8 +47,8 @@ const userSchema = new mongoose.Schema({
     },
     imageUrl: {
         type: String,
-        validate(value){
-            if(!validator.isURL(value)){
+        validate(value) {
+            if (!validator.isURL(value)) {
                 throw new Error("Invalid Image URL")
             }
         }
@@ -61,5 +63,17 @@ const userSchema = new mongoose.Schema({
 }, {
     timestamps: true
 });
+
+userSchema.methods.jwtToken = async function () {
+    const user = this;
+    const token = await jwt.sign({ _id: user._id }, "SecretKey123", { expiresIn: "1d" });
+    return token;
+}
+
+userSchema.methods.passwordValidation = async function (passwordByUser) {
+    const user = this;
+    const isValidPassword = await bcrypt.compare(passwordByUser, user.password);
+    return isValidPassword;
+}
 
 module.exports = mongoose.model("User", userSchema)
