@@ -59,10 +59,19 @@ app.delete("/user", async (req, res) => {
 })
 
 //Update a user
-app.patch("/user", async (req,res) => {
+app.patch("/user/:userId", async (req,res) => {
+    const userId = req.params?.userId;
+    const userData = req.body;
+
     try {
-        const userId = req.body.userId;
-        const userData = req.body;
+        const ALLOWED_DATA = ["age", "gender", "imageUrl", "about"];
+
+        const isAllowedData = Object.keys(userData).every( (key) => ALLOWED_DATA.includes(key))
+
+        if(!isAllowedData){
+            throw new Error("Trying to add invalid data")
+        }
+
         const updatedUser = await User.findByIdAndUpdate({_id : userId}, userData, {returnDocument: "after", runValidators: true});
         console.log(updatedUser);
         res.send("User updated successfully")
