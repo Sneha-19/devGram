@@ -17,7 +17,7 @@ app.post("/signUp", async (req, res) => {
         await user.save()
         res.send("SignUp completed")
     } catch (err) {
-        res.status(400).send("Error in signup:", err.message)
+        res.status(400).send("Error in signup:"+ err.message)
     }
 })
 
@@ -64,7 +64,7 @@ app.patch("/user/:userId", async (req,res) => {
     const userData = req.body;
 
     try {
-        const ALLOWED_DATA = ["age", "gender", "imageUrl", "about"];
+        const ALLOWED_DATA = ["age", "gender", "imageUrl", "about", "skills"];
 
         const isAllowedData = Object.keys(userData).every( (key) => ALLOWED_DATA.includes(key))
 
