@@ -21,12 +21,13 @@ requestRouter.post("/request/send/:status/:userId", userAuth, async (req,res) =>
             throw new Error("Incorrect User Id, User doesn't exist!")
         }
 
-        const isCrossRequest = await ConnectionRequest.find({
+        const isCrossRequest = await ConnectionRequest.findOne({
             $or : [
                 {fromUserId, toUserId},
                 {fromUserId: toUserId, toUserId: fromUserId}
             ]
         })
+        console.log(isCrossRequest)
         if(isCrossRequest){
             throw new Error("Request already sent!!")
         }
@@ -54,7 +55,7 @@ requestRouter.post("/request/review/:status/:requestId", userAuth, async (req, r
 
         const connectionRequest = await ConnectionRequest.findOne({
             _id: requestId,
-            toUserId: loggedInUser,
+            toUserId: loggedInUser._id,
             status: "interested"
         })
 
