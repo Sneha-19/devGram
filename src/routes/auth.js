@@ -31,6 +31,7 @@ authRouter.post("/signUp", async (req, res) => {
 authRouter.post("/login", async (req, res) => {
     try {
         const { emailId, password } = req.body;
+        
         if (!validator.isEmail(emailId)) {
             res.status(400).send("Invalid Email format")
         }
@@ -51,7 +52,7 @@ authRouter.post("/login", async (req, res) => {
             //Send the token in a cookie
             res.cookie("token", token);
 
-            res.send("Logged In Successfully")
+            res.send(user)
         }
     } catch (err) {
         res.status(400).send("ERROR in login : " + err.message)
