@@ -20,8 +20,13 @@ authRouter.post("/signUp", async (req, res) => {
             firstName, lastName, emailId, password: passwordHash
         });
 
+        const token = await user.jwtToken();
+
+        //Send the token in a cookie
+        res.cookie("token", token);
         await user.save()
-        res.send("SignUp completed")
+
+        res.json({ message: "SignUp completed", data: user })
     } catch (err) {
         res.status(400).send("Error in signup:" + err.message)
     }
@@ -31,7 +36,7 @@ authRouter.post("/signUp", async (req, res) => {
 authRouter.post("/login", async (req, res) => {
     try {
         const { emailId, password } = req.body;
-        
+
         if (!validator.isEmail(emailId)) {
             res.status(400).send("Invalid Email format")
         }
@@ -60,7 +65,7 @@ authRouter.post("/login", async (req, res) => {
 })
 
 //Logout
-authRouter.post("/logout", async (req,res) => {
+authRouter.post("/logout", async (req, res) => {
     res.cookie("token", null, {
         expires: new Date(Date.now())
     });
